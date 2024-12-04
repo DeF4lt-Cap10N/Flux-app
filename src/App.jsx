@@ -7,7 +7,7 @@ import Navbar from './components/Navbar'
 
 const App = () => {
   return (
-    <main className='relative min-h-screen w-screen overflow-auto overflow-x-hidden'>
+    <main className='relative min-h-screen w-screen overflow-auto overflow-x-hidden '>
       <Navbar/>
       <Hero/>
       <About/>
