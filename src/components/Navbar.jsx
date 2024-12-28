@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { TiLocationArrow } from 'react-icons/ti';
 import Button from './Button';
+import gsap from 'gsap';
+import {useWindowScroll } from 'react-use';
 
 const navItems = ['Nexus', 'vault', 'Prologue', 'About', 'Contact'];
 
@@ -10,8 +12,39 @@ const Navbar = () => {
    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
    const [isIndicatorActive, setIsIndicatorActive] = useState(false);
 
+   const [lastScrollY, setLastScrollY] = useState(0);
+   const [isNavVisible, setIsNavVisible] = useState(true);
+
    const navContainerRef = useRef(null);
    const audioElementRef = useRef(null);
+
+   const {y: currScrollY } = useWindowScroll();
+
+   useEffect(() => {
+      if(currScrollY===0){
+         setIsNavVisible(true);
+         navContainerRef.current.classList.remove('floating-nav');
+      }
+      else if(currScrollY>lastScrollY){
+         setIsNavVisible(false);
+         navContainerRef.current.classList.add('floating-nav');
+      }
+      else if(currScrollY<lastScrollY){
+         setIsNavVisible(true);
+         navContainerRef.current.classList.add('floating-nav');
+      }
+      setLastScrollY(currScrollY);
+      
+   }, [currScrollY, lastScrollY])
+ 
+   useEffect(() => {
+      gsap.to(navContainerRef.current, {
+         y : isNavVisible ? 0 : -100,
+         opacity : isNavVisible? 1:0,
+         duration : 0.2,
+      })
+   }, [isNavVisible])
+
 
    const toggleAudioIndicator = () => {
       setIsAudioPlaying((prev) => !prev);
@@ -73,15 +106,15 @@ const Navbar = () => {
                         src='/audio/loop.mp3'
                         loop
                      />
-                        {
-                           [1, 2, 3, 4].map((bar) => (
-                              <div
-                                 key={bar}
-                                 className={`indicator-line ${isIndicatorActive ? 'active' : ''}`}
-                                 style={{ animationDelay: `${bar * 0.1}s` }}
-                              />
-                           ))
-                        }                   
+                     {
+                        [1, 2, 3, 4].map((bar) => (
+                           <div
+                              key={bar}
+                              className={`indicator-line ${isIndicatorActive ? 'active' : ''}`}
+                              style={{ animationDelay: `${bar * 0.1}s` }}
+                           />
+                        ))
+                     }
                   </button>
                </div>
             </nav>
